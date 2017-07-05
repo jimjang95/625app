@@ -32,7 +32,6 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
         mPlayer.setOnErrorListener(this);
 
         if (mPlayer != null) {
-            mPlayer.setLooping(true);
             mPlayer.setVolume(100, 100);
         }
 

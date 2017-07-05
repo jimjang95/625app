@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,11 +28,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.Buffer;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.Scanner;
 
 public class MainActivity extends Activity {
+    private BufferedReader bufferedReader = null;
     private MusicService mService;
     private boolean mBound = false;
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -53,31 +59,66 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Typeface typeface = Typeface.createFromAsset(getAssets(),"sadanFont.ttf");
+        Date today = new Date();
+        int month = today.getMonth() + 1;
+        int day = today.getDate();
+        String fileName = "sortByDate/";
+        if (month < 10) {
+            fileName += '0';
+        }
+        fileName += month;
+        if (day < 10) {
+            fileName += '0';
+        }
+        fileName += day;
+        fileName += ".csv";
 
-        final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
+        try {
+            bufferedReader = new BufferedReader(
+                    new InputStreamReader(getAssets().open(fileName), "UTF-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Log.d("ControlTest", fileName);
+        FileController controller = new FileController(bufferedReader);
+        for (Soldier s : controller.getSoldiers()) {
+            Log.d("ControlTest", s.toString());
+        }
+
+        Soldier[] soldiers = controller.getSoldiers().toArray(new Soldier[controller.size]);
+        Log.d("전사자 명부 총원", String.valueOf(soldiers.length) + "명");
+
+        Arrays.sort(soldiers, new Comparator<Soldier>() {
+            @Override
+            public int compare(Soldier a, Soldier b) {
+                if (a.getYear() == b.getYear()) {
+                    if (a.getSosok() == b.getSosok()) {
+                        return b.getRank().ordinal() - a.getRank().ordinal();
+                    } else {
+                        return a.getSosok().ordinal() - b.getSosok().ordinal();
+                    }
+                } else {
+                    return a.getYear() - b.getYear();
+                }
+            }
+        });
+
+        //final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
         final TextView textView = (TextView) findViewById(R.id.fallenText);
         TextView textView1 = (TextView) findViewById(R.id.title1);
         TextView textView2 = (TextView) findViewById(R.id.title2);
-        textView.setTypeface(typeface);
+        Typeface typeface = Typeface.createFromAsset(getAssets(),"sadanFont.ttf");
+        //textView.setTypeface(typeface);
         textView1.setTypeface(typeface);
         textView2.setTypeface(typeface);
-        try {
-            BufferedReader bufferedReader = new BufferedReader(
-                    new InputStreamReader(getAssets().open("junsaja625.csv"), "UTF-8"));
-            String line;
-            while((line = bufferedReader.readLine()) != null) {
-                textView.append(line);
-                textView.append("\n\n");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-//        for(int i=0; i<100; i++) {
-//            textView.append("아아아아아아아아아아아아아아\n\n");
-//        }
 
-        scrollView.post(new Runnable() {
+        for(int i=0; i<soldiers.length; i++) {
+            textView.append(String.valueOf(soldiers[i].getYear()) + ". " +
+            String.valueOf(soldiers[i].getMonth()) + ". " + String.valueOf(soldiers[i].getDay()) + "\t" +
+            soldiers[i].getSosok() + "\t" + soldiers[i].nameRank() + "\n");
+        }
+
+        /*scrollView.post(new Runnable() {
             @Override
             public void run() {
                 final ObjectAnimator autoScroll = ObjectAnimator.ofInt(scrollView, "scrollY", textView.getHeight()).setDuration(500000);
@@ -106,17 +147,9 @@ public class MainActivity extends Activity {
                     }
                 });
             }
-        });
+        });*/
 
-        /*File file = new File();   //파일 경로
-        try {
-            FileReader fileReader = new FileReader(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }*/
-
-        final ImageButton playStop = findViewById(R.id.button2);
-        playStop.setBackgroundResource(R.drawable.start);
+        final ImageButton playStop = findViewById(R.id.playStop);
         playStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -130,6 +163,13 @@ public class MainActivity extends Activity {
                     mService.stopMusic();
                     playStop.setBackgroundResource(R.drawable.start);
                 }
+            }
+        });
+
+        mService.mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                playStop.setBackgroundResource(R.drawable.start);
             }
         });
     }

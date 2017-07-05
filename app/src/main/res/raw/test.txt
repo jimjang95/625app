@@ -1,4 +1,0 @@
-no.1	V2	Jung
-no.2	_3	Jang
-no.3	_2	Yun
-no.4	_2	Koo
