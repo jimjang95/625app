@@ -46,6 +46,13 @@ public class MainActivity extends Activity {
             MusicService.ServiceBinder binder = (MusicService.ServiceBinder) iBinder;
             mService = binder.getService();
             mBound = true;
+
+            mService.mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    findViewById(R.id.playStop).setBackgroundResource(R.mipmap.ic_start);
+                }
+            });
         }
 
         @Override
@@ -104,18 +111,19 @@ public class MainActivity extends Activity {
         });
 
         //final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
-        final TextView textView = (TextView) findViewById(R.id.fallenText);
+        final TextView text1 = (TextView) findViewById(R.id.text1);
         TextView textView1 = (TextView) findViewById(R.id.title1);
         TextView textView2 = (TextView) findViewById(R.id.title2);
+        final ImageButton playStop = findViewById(R.id.playStop);
         Typeface typeface = Typeface.createFromAsset(getAssets(),"sadanFont.ttf");
         //textView.setTypeface(typeface);
         textView1.setTypeface(typeface);
         textView2.setTypeface(typeface);
 
         for(int i=0; i<soldiers.length; i++) {
-            textView.append(String.valueOf(soldiers[i].getYear()) + ". " +
-            String.valueOf(soldiers[i].getMonth()) + ". " + String.valueOf(soldiers[i].getDay()) + "\t" +
-            soldiers[i].getSosok() + "\t" + soldiers[i].nameRank() + "\n");
+            text1.append(String.valueOf(soldiers[i].getYear()) + ". " +
+            String.valueOf(soldiers[i].getMonth()) + ". " + String.valueOf(soldiers[i].getDay()) + "\t\t\t" +
+            soldiers[i].getSosok() + "      " + soldiers[i].nameRank() + "\n");
         }
 
         /*scrollView.post(new Runnable() {
@@ -149,7 +157,6 @@ public class MainActivity extends Activity {
             }
         });*/
 
-        final ImageButton playStop = findViewById(R.id.playStop);
         playStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -158,20 +165,15 @@ public class MainActivity extends Activity {
                 }
                 if (!mService.mPlayer.isPlaying()) {
                     mService.startMusic();
-                    playStop.setBackgroundResource(R.drawable.stop);
+                    playStop.setBackgroundResource(R.mipmap.ic_stop);
                 } else {
                     mService.stopMusic();
-                    playStop.setBackgroundResource(R.drawable.start);
+                    playStop.setBackgroundResource(R.mipmap.ic_start);
                 }
             }
         });
 
-        mService.mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                playStop.setBackgroundResource(R.drawable.start);
-            }
-        });
+
     }
 
     @Override

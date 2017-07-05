@@ -24,11 +24,11 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:textColor="#000000"
-                android:textSize="30dp"
-                android:layout_margin="10dp"
-                android:id="@+id/fallenText"/>
+                android:textSize="28dp"
+                android:layout_margin="5dp"
+                android:id="@+id/text1"/>
 
         </ScrollView>
 
@@ -37,9 +37,9 @@
             android:layout_width="100dp"
             android:background="@mipmap/ic_start"
             android:id="@+id/playStop"
-            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/scrollView"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="36dp" />
+            android:layout_marginTop="30dp" />
 
     </RelativeLayout>
 
@@ -47,21 +47,21 @@
         android:id="@+id/title1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="60dp"
+        android:textSize="90dp"
         android:textColor="#ffffff"
         android:text="제 1보병사단"
-        android:layout_marginEnd="243dp"
-        android:layout_marginTop="121dp"
+        android:layout_marginTop="134dp"
+        android:layout_marginStart="74dp"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_toEndOf="@+id/lay" />
 
     <TextView
         android:id="@+id/title2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="60dp"
+        android:textSize="90dp"
         android:textColor="#ffffff"
-        android:text="  전사자 명부"
+        android:text="    전사자 명부"
         android:layout_below="@+id/title1"
         android:layout_alignStart="@+id/title1"
         android:layout_marginTop="42dp" />
